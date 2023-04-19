@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import * as esbuild from 'esbuild-wasm';
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugin';
 // import { start } from 'repl';
 
 const App = () => {
@@ -30,12 +31,22 @@ const App = () => {
         // by basically any environment e.g. an old or current browser.
         // Below we are selecting the language to be `jsx` and the 
         // 'target' property says the following.
-        const result = await ref.current.transform(input, {
-            loader: 'jsx',
-            target: 'es2015'
+        // const result = await ref.current.transform(input, {
+        //     loader: 'jsx',
+        //     target: 'es2015'
+        // });
+
+        // Replaced the above with the below
+        const result = await ref.current.build({
+            entryPoints: ['index.js'],
+            bundle: true,
+            write: false,
+            plugins: [unpkgPathPlugin()]
         });
 
-        setCode(result.code); 
+        // console.log(result);
+
+        setCode(result.outputFiles[0].text); 
     };
 
     return <div>
